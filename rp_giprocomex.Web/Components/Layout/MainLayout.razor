@@ -1,0 +1,16 @@
+﻿@namespace rp_giprocomex.Web.Components.Layout
+@inherits LayoutComponentBase
+
+<div class="page">
+    <header>
+        <NavMenu />
+    </header>
+
+    <main class="container mt-4">
+        @Body
+    </main>
+
+    <footer class="text-center mt-4 mb-4">
+        <small>&copy; @DateTime.UtcNow.Year - rp_giprocomex</small>
+    </footer>
+</div>

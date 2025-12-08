@@ -1,0 +1,105 @@
+﻿@page "/employees/edit/{Id:int}"
+@using System.ComponentModel.DataAnnotations
+@using rp_giprocomex.Core.Models
+@inject rp_giprocomex.Services.EmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+
+<h3>@(isNew ? "Nuevo empleado" : "Editar empleado")</h3>
+
+@if (model == null)
+{
+    <p><em>Cargando...</em></p>
+}
+else
+{
+    <EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="model.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            <InputText class="form-control" @bind-Value="model.LastName" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Documento</label>
+            <InputText class="form-control" @bind-Value="model.DocumentNumber" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="model.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Teléfono</label>
+            <InputText class="form-control" @bind-Value="model.Phone" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Fecha de alta</label>
+            <InputDate class="form-control" @bind-Value="model.HireDate" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Salario</label>
+            <InputNumber class="form-control" @bind-Value="model.Salary" />
+        </div>
+
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" @bind="model.IsActive" />
+            <label class="form-check-label">Activo</label>
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar</button>
+        <button class="btn btn-secondary ms-2" type="button" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Employee? model;
+    private bool isNew => Id == 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (isNew)
+        {
+            model = new Employee();
+        }
+        else
+        {
+            model = await EmployeeService.GetByIdAsync(Id);
+            if (model == null)
+            {
+                // si no existe, navegar a lista
+                NavigationManager.NavigateTo("/employees");
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (model == null) return;
+
+        if (isNew)
+        {
+            await EmployeeService.CreateAsync(model);
+        }
+        else
+        {
+            await EmployeeService.UpdateAsync(model);
+        }
+
+        NavigationManager.NavigateTo("/employees");
+    }
+
+    void Cancel() => NavigationManager.NavigateTo("/employees");
+}

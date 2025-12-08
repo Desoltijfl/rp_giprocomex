@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Elementos de la solución/">
+    <File Path=".gitignore" />
+  </Folder>
+  <Project Path="rp_giprocomex.Core/rp_giprocomex.Core.csproj" />
+  <Project Path="rp_giprocomex.Data/rp_giprocomex.Data.csproj" />
+  <Project Path="rp_giprocomex.Services/rp_giprocomex.Services.csproj" />
+  <Project Path="rp_giprocomex.Web/rp_giprocomex.Web.csproj" />
+</Solution>

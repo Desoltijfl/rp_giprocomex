@@ -1,0 +1,9 @@
+# .gitignore (resumen)
+.vs/
+bin/
+obj/
+*.user
+*.suo
+appsettings.Development.json
+secrets/
+*.db
