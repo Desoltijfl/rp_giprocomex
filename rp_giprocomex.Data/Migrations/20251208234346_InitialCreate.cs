@@ -54,24 +54,24 @@ namespace rp_giprocomex.Data.Migrations
                 name: "Employees",
                 columns: table => new
                 {
-                    EmployeeId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DocumentNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    HireDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    DepartmentId = table.Column<int>(type: "int", nullable: true),
-                    PositionId = table.Column<int>(type: "int", nullable: true),
-                    Salary = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    Numero = table.Column<int>(type: "int", nullable: false),
+                    Puesto = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Oficina = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Empresa = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    RegistroPatronal = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Siroc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NombreCompleto = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
+                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaTermino = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Renovacion = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RenovacionTermino = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Indeterminado = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Employees", x => x.EmployeeId);
+                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(

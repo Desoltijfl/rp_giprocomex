@@ -1,72 +1,56 @@
 ﻿@page "/employees"
+@inject EmployeeService EmployeeService
 @using rp_giprocomex.Core.Models
-@inject rp_giprocomex.Services.EmployeeService EmployeeService
-@inject NavigationManager NavigationManager
 
 <h3>Empleados</h3>
 
-<button class="btn btn-primary mb-2" @onclick="New">Nuevo empleado</button>
+<input @bind="search" placeholder="Buscar..." class="form-control mb-2" />
+<button class="btn btn-primary mb-3" @onclick="Load">Buscar</button>
 
-@if (employees == null)
-{
-    <p><em>Cargando...</em></p>
-}
-else if (!employees.Any())
-{
-    <p>No hay empleados.</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Puesto</th>
+            <th>Oficina</th>
+            <th>Empresa</th>
+            <th>Registro</th>
+            <th>Nombre</th>
+            <th>Ingreso</th>
+            <th>Aniv.</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var e in employees)
+        {
             <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Activo</th>
-                <th></th>
+                <td>@e.Numero</td>
+                <td>@e.Puesto</td>
+                <td>@e.Oficina</td>
+                <td>@e.Empresa</td>
+                <td>@e.RegistroPatronal</td>
+                <td>@e.NombreCompleto</td>
+                <td>@e.FechaIngreso.ToString("dd-MM-yyyy")</td>
+                <td>@e.Aniversario</td>
+                <td>
+                    <a class="btn btn-sm btn-secondary" href="@($"employees/edit/{e.Id}")">Editar</a>
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            @foreach (var e in employees)
-            {
-                <tr>
-                    <td>@(e.FirstName + " " + e.LastName)</td>
-                    <td>@e.Email</td>
-                    <td>@e.Phone</td>
-                    <td>@(e.IsActive ? "Sí" : "No")</td>
-                    <td>
-                        <button class="btn btn-sm btn-secondary" @onclick="@(() => Edit(e.EmployeeId))">Editar</button>
-                        <button class="btn btn-sm btn-danger" @onclick="@(() => Delete(e.EmployeeId))">Borrar</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+        }
+    </tbody>
+</table>
 
 @code {
-    private List<Employee>? employees;
+    private List<Employee> employees = new();
+    private string? search;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await Load();
+
+    private async Task Load()
     {
-        employees = await EmployeeService.GetAllAsync();
+        employees = string.IsNullOrWhiteSpace(search)
+            ? await EmployeeService.GetAllAsync()
+            : await EmployeeService.SearchAsync(search);
     }
-
-    void New() => NavigationManager.NavigateTo("/employees/edit/0");
-
-    void Edit(int id) => NavigationManager.NavigateTo($"/employees/edit/{id}");
-
-    async Task Delete(int id)
-    {
-        var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Eliminar empleado {id}?");
-        if (confirm)
-        {
-            await EmployeeService.DeleteAsync(id);
-            employees = await EmployeeService.GetAllAsync();
-            StateHasChanged();
-        }
-    }
-
-    [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 }

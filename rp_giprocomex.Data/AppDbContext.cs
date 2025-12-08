@@ -11,7 +11,7 @@ namespace rp_giprocomex.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<Employee> Employees { get; set; } = null!;
+        public DbSet<Employee> Employees { get; set; }
         // Agrega DbSet<Department>, DbSet<Position>, DbSet<Contract> si los creas
 
         protected override void OnModelCreating(ModelBuilder builder)
