@@ -1,9 +1,9 @@
-﻿// name=rp_giprocomex.Services/EmployeeService.cs
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using rp_giprocomex.Data;
 using rp_giprocomex.Core.Models;
+using rp_giprocomex.Data;
 
 namespace rp_giprocomex.Services
 {
@@ -20,12 +20,27 @@ namespace rp_giprocomex.Services
 
         public async Task AddAsync(Employee emp)
         {
+            // Normalizar datos: si es indeterminado, quitar fechas de término/renovación
+            if (emp.Indeterminado)
+            {
+                emp.FechaTermino = null;
+                emp.Renovacion = null;
+                emp.RenovacionTermino = null;
+            }
+
             _db.Employees.Add(emp);
             await _db.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(Employee emp)
         {
+            if (emp.Indeterminado)
+            {
+                emp.FechaTermino = null;
+                emp.Renovacion = null;
+                emp.RenovacionTermino = null;
+            }
+
             _db.Employees.Update(emp);
             await _db.SaveChangesAsync();
         }
@@ -40,14 +55,14 @@ namespace rp_giprocomex.Services
             }
         }
 
-        // Opcional: buscar por texto / filtro por oficina / proximos aniversarios
         public async Task<List<Employee>> SearchAsync(string? q) =>
             await _db.Employees
                 .Where(e => string.IsNullOrEmpty(q)
-                    || e.NombreCompleto.Contains(q)
-                    || e.Puesto.Contains(q)
-                    || e.Oficina.Contains(q))
+                    || (e.NombreCompleto != null && e.NombreCompleto.Contains(q))
+                    || (e.Puesto != null && e.Puesto.Contains(q))
+                    || (e.Oficina != null && e.Oficina.Contains(q)))
                 .AsNoTracking()
+                .OrderBy(e => e.Numero)
                 .ToListAsync();
     }
 }

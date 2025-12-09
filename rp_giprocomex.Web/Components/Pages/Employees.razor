@@ -1,14 +1,17 @@
 ﻿@page "/employees"
-@inject EmployeeService EmployeeService
+@inject rp_giprocomex.Services.EmployeeService EmployeeService
 @using rp_giprocomex.Core.Models
 
 <h3>Empleados</h3>
 
-<input @bind="search" placeholder="Buscar..." class="form-control mb-2" />
-<button class="btn btn-primary mb-3" @onclick="Load">Buscar</button>
+<div class="mb-3">
+    <input @bind="search" class="form-control d-inline-block w-50" placeholder="Buscar por nombre, puesto u oficina..." />
+    <button class="btn btn-primary ms-2" @onclick="Load">Buscar</button>
+    <a class="btn btn-success ms-2" href="/employees/edit">Nuevo empleado</a>
+</div>
 
-<table class="table table-striped">
-    <thead>
+<table class="table table-sm table-striped">
+    <thead class="table-dark">
         <tr>
             <th>#</th>
             <th>Puesto</th>
@@ -18,25 +21,38 @@
             <th>Nombre</th>
             <th>Ingreso</th>
             <th>Aniv.</th>
+            <th>Indeterminado</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var e in employees)
+        @if (employees is null)
         {
-            <tr>
-                <td>@e.Numero</td>
-                <td>@e.Puesto</td>
-                <td>@e.Oficina</td>
-                <td>@e.Empresa</td>
-                <td>@e.RegistroPatronal</td>
-                <td>@e.NombreCompleto</td>
-                <td>@e.FechaIngreso.ToString("dd-MM-yyyy")</td>
-                <td>@e.Aniversario</td>
-                <td>
-                    <a class="btn btn-sm btn-secondary" href="@($"employees/edit/{e.Id}")">Editar</a>
-                </td>
-            </tr>
+            <tr><td colspan="10">Cargando...</td></tr>
+        }
+        else if (employees.Count == 0)
+        {
+            <tr><td colspan="10">No hay empleados.</td></tr>
+        }
+        else
+        {
+            @foreach (var e in employees)
+            {
+                <tr>
+                    <td>@e.Numero</td>
+                    <td>@e.Puesto</td>
+                    <td>@e.Oficina</td>
+                    <td>@e.Empresa</td>
+                    <td>@e.RegistroPatronal</td>
+                    <td>@e.NombreCompleto</td>
+                    <td>@(e.FechaIngreso.ToString("yyyy-MM-dd"))</td>
+                    <td>@GetAniversario(e)</td>
+                    <td>@(e.Indeterminado ? "Sí" : "No")</td>
+                    <td>
+                        <a class="btn btn-sm btn-secondary" href="@($"/employees/edit/{e.Id}")">Editar</a>
+                    </td>
+                </tr>
+            }
         }
     </tbody>
 </table>
@@ -45,12 +61,23 @@
     private List<Employee> employees = new();
     private string? search;
 
-    protected override async Task OnInitializedAsync() => await Load();
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
 
     private async Task Load()
     {
         employees = string.IsNullOrWhiteSpace(search)
             ? await EmployeeService.GetAllAsync()
             : await EmployeeService.SearchAsync(search);
+    }
+
+    private int GetAniversario(Employee e)
+    {
+        var now = DateTime.UtcNow.Date;
+        var years = now.Year - e.FechaIngreso.Year;
+        if (e.FechaIngreso > now.AddYears(-years)) years--;
+        return Math.Max(0, years);
     }
 }

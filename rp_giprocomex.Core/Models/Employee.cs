@@ -1,10 +1,10 @@
-﻿// name=rp_giprocomex.Core/Models/Employee.cs
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace rp_giprocomex.Core.Models
 {
+    [Table("Employees")]
     public class Employee
     {
         [Key]
@@ -12,20 +12,20 @@ namespace rp_giprocomex.Core.Models
 
         public int Numero { get; set; } // N°
 
-        [Required, MaxLength(200)]
-        public string Puesto { get; set; } = string.Empty;
+        [MaxLength(200)]
+        public string? Puesto { get; set; }
 
         [MaxLength(200)]
-        public string Oficina { get; set; } = string.Empty;
+        public string? Oficina { get; set; }
 
         [MaxLength(150)]
-        public string Empresa { get; set; } = string.Empty;
+        public string? Empresa { get; set; }
 
         [MaxLength(50)]
-        public string RegistroPatronal { get; set; } = string.Empty;
+        public string? RegistroPatronal { get; set; }
 
         [MaxLength(50)]
-        public string Siroc { get; set; } = string.Empty;
+        public string? Siroc { get; set; }
 
         [Required, MaxLength(300)]
         public string NombreCompleto { get; set; } = string.Empty;
@@ -43,18 +43,5 @@ namespace rp_giprocomex.Core.Models
         public DateTime? RenovacionTermino { get; set; }
 
         public bool Indeterminado { get; set; }
-
-        // No mapeado a BD: calculado en tiempo de ejecución
-        [NotMapped]
-        public int Aniversario
-        {
-            get
-            {
-                var now = DateTime.UtcNow.Date;
-                var years = now.Year - FechaIngreso.Year;
-                if (FechaIngreso > now.AddYears(-years)) years--;
-                return Math.Max(0, years);
-            }
-        }
     }
 }

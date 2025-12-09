@@ -1,14 +1,15 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using System;
 
 #nullable disable
 
 namespace rp_giprocomex.Data.Migrations
 {
-    /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    [DbContext(typeof(AppDbContext))]
+    [Migration("20251209120000_AddIdentityTables")]
+    public partial class AddIdentityTables : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -48,30 +49,6 @@ namespace rp_giprocomex.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Employees",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Numero = table.Column<int>(type: "int", nullable: false),
-                    Puesto = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Oficina = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Empresa = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    RegistroPatronal = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Siroc = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    NombreCompleto = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    FechaIngreso = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FechaTermino = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Renovacion = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    RenovacionTermino = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Indeterminado = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Employees", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -180,6 +157,7 @@ namespace rp_giprocomex.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            // Indexes
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -220,7 +198,6 @@ namespace rp_giprocomex.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
@@ -233,13 +210,10 @@ namespace rp_giprocomex.Data.Migrations
                 name: "AspNetUserLogins");
 
             migrationBuilder.DropTable(
-                name: "AspNetUserRoles");
-
-            migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Employees");
+                name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
