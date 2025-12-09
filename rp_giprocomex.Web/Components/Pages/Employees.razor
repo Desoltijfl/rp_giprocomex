@@ -4,10 +4,14 @@
 
 <h3>Empleados</h3>
 
-<div class="mb-3">
-    <input @bind="search" class="form-control d-inline-block w-50" placeholder="Buscar por nombre, puesto u oficina..." />
-    <button class="btn btn-primary ms-2" @onclick="Load">Buscar</button>
-    <a class="btn btn-success ms-2" href="/employees/edit">Nuevo empleado</a>
+<div class="mb-3 row">
+    <div class="col-md-6">
+        <input @bind="search" class="form-control" placeholder="Buscar por nombre, puesto u oficina..." />
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" @onclick="Load">Buscar</button>
+        <a class="btn btn-success ms-2" href="/employees/edit">Nuevo empleado</a>
+    </div>
 </div>
 
 <table class="table table-sm table-striped">
@@ -20,7 +24,9 @@
             <th>Registro</th>
             <th>Nombre</th>
             <th>Ingreso</th>
-            <th>Aniv.</th>
+            <th>Fecha Término</th>
+            <th>Renovación - Inicio</th>
+            <th>Renovación - Término</th>
             <th>Indeterminado</th>
             <th></th>
         </tr>
@@ -28,11 +34,11 @@
     <tbody>
         @if (employees is null)
         {
-            <tr><td colspan="10">Cargando...</td></tr>
+            <tr><td colspan="12">Cargando...</td></tr>
         }
         else if (employees.Count == 0)
         {
-            <tr><td colspan="10">No hay empleados.</td></tr>
+            <tr><td colspan="12">No hay empleados.</td></tr>
         }
         else
         {
@@ -46,7 +52,9 @@
                     <td>@e.RegistroPatronal</td>
                     <td>@e.NombreCompleto</td>
                     <td>@(e.FechaIngreso.ToString("yyyy-MM-dd"))</td>
-                    <td>@GetAniversario(e)</td>
+                    <td>@(e.FechaTermino.HasValue? e.FechaTermino.Value.ToString("yyyy-MM-dd") : "")</td>
+                    <td>@(e.Renovacion.HasValue? e.Renovacion.Value.ToString("yyyy-MM-dd") : "")</td>
+                    <td>@(e.RenovacionTermino.HasValue? e.RenovacionTermino.Value.ToString("yyyy-MM-dd") : "")</td>
                     <td>@(e.Indeterminado ? "Sí" : "No")</td>
                     <td>
                         <a class="btn btn-sm btn-secondary" href="@($"/employees/edit/{e.Id}")">Editar</a>
@@ -71,13 +79,5 @@
         employees = string.IsNullOrWhiteSpace(search)
             ? await EmployeeService.GetAllAsync()
             : await EmployeeService.SearchAsync(search);
-    }
-
-    private int GetAniversario(Employee e)
-    {
-        var now = DateTime.UtcNow.Date;
-        var years = now.Year - e.FechaIngreso.Year;
-        if (e.FechaIngreso > now.AddYears(-years)) years--;
-        return Math.Max(0, years);
     }
 }

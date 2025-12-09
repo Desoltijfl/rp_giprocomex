@@ -10,7 +10,7 @@ namespace rp_giprocomex.Core.Models
         [Key]
         public int Id { get; set; }
 
-        public int Numero { get; set; } // N°
+        public int Numero { get; set; } // Número/Legajo
 
         [MaxLength(200)]
         public string? Puesto { get; set; }

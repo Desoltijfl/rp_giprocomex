@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -18,15 +19,37 @@ namespace rp_giprocomex.Services
         public async Task<Employee?> GetByIdAsync(int id) =>
             await _db.Employees.FindAsync(id);
 
-        public async Task AddAsync(Employee emp)
+        // Calculo centralizado de fechas (server-side)
+        private void CalculateDates(Employee emp)
         {
-            // Normalizar datos: si es indeterminado, quitar fechas de término/renovación
+            if (emp == null) return;
+
             if (emp.Indeterminado)
             {
                 emp.FechaTermino = null;
                 emp.Renovacion = null;
                 emp.RenovacionTermino = null;
+                return;
             }
+
+            // Asegurar FechaIngreso válida; si no definida, fijar a hoy
+            if (emp.FechaIngreso == default)
+                emp.FechaIngreso = DateTime.Today;
+
+            // Regla: FechaTermino = FechaIngreso + 90 días
+            emp.FechaTermino = emp.FechaIngreso.AddDays(90);
+
+            // Renovacion = FechaTermino (inicio de la renovación)
+            emp.Renovacion = emp.FechaTermino;
+
+            // RenovacionTermino = Renovacion + 90 días
+            emp.RenovacionTermino = emp.Renovacion?.AddDays(90);
+        }
+
+        public async Task AddAsync(Employee emp)
+        {
+            // Calcula las fechas antes de guardar (defensivo)
+            CalculateDates(emp);
 
             _db.Employees.Add(emp);
             await _db.SaveChangesAsync();
@@ -34,12 +57,8 @@ namespace rp_giprocomex.Services
 
         public async Task UpdateAsync(Employee emp)
         {
-            if (emp.Indeterminado)
-            {
-                emp.FechaTermino = null;
-                emp.Renovacion = null;
-                emp.RenovacionTermino = null;
-            }
+            // Recalcula las fechas antes de actualizar (defensivo)
+            CalculateDates(emp);
 
             _db.Employees.Update(emp);
             await _db.SaveChangesAsync();
@@ -58,9 +77,9 @@ namespace rp_giprocomex.Services
         public async Task<List<Employee>> SearchAsync(string? q) =>
             await _db.Employees
                 .Where(e => string.IsNullOrEmpty(q)
-                    || (e.NombreCompleto != null && e.NombreCompleto.Contains(q))
-                    || (e.Puesto != null && e.Puesto.Contains(q))
-                    || (e.Oficina != null && e.Oficina.Contains(q)))
+                    || (e.NombreCompleto != null && EF.Functions.Like(e.NombreCompleto, $"%{q}%"))
+                    || (e.Puesto != null && EF.Functions.Like(e.Puesto, $"%{q}%"))
+                    || (e.Oficina != null && EF.Functions.Like(e.Oficina, $"%{q}%")))
                 .AsNoTracking()
                 .OrderBy(e => e.Numero)
                 .ToListAsync();
