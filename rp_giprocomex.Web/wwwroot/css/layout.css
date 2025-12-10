@@ -1,0 +1,173 @@
+﻿:root {
+    --sidebar-width: 260px;
+    --sidebar-bg: #1f2d3d;
+    --sidebar-contrast: #ffffff;
+    --sidebar-muted: #b9c2cc;
+    --main-bg: #f2f6f8;
+    --content-padding: 22px;
+    --max-width: 1400px;
+    --brand-color: #2C6EA4;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Root layout */
+.layout-root {
+    display: flex;
+    min-height: 100vh;
+    background: var(--main-bg);
+}
+
+/* Sidebar */
+.app-sidebar {
+    width: var(--sidebar-width);
+    flex: 0 0 var(--sidebar-width);
+    background: linear-gradient(180deg,var(--sidebar-bg), #16202a);
+    color: var(--sidebar-contrast);
+    padding: 18px 14px;
+    box-shadow: 2px 0 6px rgba(10,12,14,0.06);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    overflow: auto;
+    z-index: 30;
+}
+
+.sidebar-brand {
+    margin-bottom: 18px;
+}
+
+.brand-link {
+    color: var(--sidebar-contrast);
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0 0;
+}
+
+    .sidebar-nav li {
+        margin: 6px 0;
+    }
+
+    .sidebar-nav .nav-link {
+        display: block;
+        padding: 10px 10px;
+        color: var(--sidebar-muted);
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all .12s ease;
+    }
+
+        .sidebar-nav .nav-link:hover,
+        .sidebar-nav .nav-link.active {
+            background: rgba(255,255,255,0.04);
+            color: var(--sidebar-contrast);
+            transform: translateX(4px);
+        }
+
+/* bottom area */
+.sidebar-bottom {
+    margin-top: 18px;
+    border-top: 1px solid rgba(255,255,255,0.03);
+    padding-top: 12px;
+}
+
+/* Main content */
+.main-content {
+    margin-left: var(--sidebar-width); /* espacio para sidebar */
+    flex: 1 1 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header inside main */
+.main-header {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 var(--content-padding);
+    border-bottom: 1px solid rgba(0,0,0,0.03);
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
+}
+
+.hamburger {
+    display: none;
+    background: transparent;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 1rem;
+    color: var(--brand-color);
+    font-weight: 700;
+}
+
+/* content area */
+.content-area {
+    padding: 20px;
+    padding-left: var(--content-padding);
+    padding-right: var(--content-padding);
+    max-width: var(--max-width);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* footer */
+.main-footer {
+    margin-top: auto;
+    padding: 14px 22px;
+    color: #6c757d;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(0,0,0,0.02);
+    background: transparent;
+}
+
+/* Responsive: collapse sidebar on small screens */
+@media (max-width: 991px) {
+    .app-sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        flex: 0 0 auto;
+        display: block;
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .hamburger {
+        display: inline-block;
+    }
+
+    .content-area {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+}
+
+/* Extra: make employees table fill available width inside content-area
+   (override the previous centering class if present) */
+.employees-wrap {
+    padding: 8px 0;
+}
+
+.employees-container {
+    max-width: 100%;
+    width: 100%;
+}
+
+.table-card {
+    width: 100%;
+    box-sizing: border-box;
+}

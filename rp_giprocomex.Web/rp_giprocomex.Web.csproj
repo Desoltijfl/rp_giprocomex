@@ -29,4 +29,8 @@
     <ProjectReference Include="..\rp_giprocomex.Services\rp_giprocomex.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\employees\" />
+  </ItemGroup>
+
 </Project>

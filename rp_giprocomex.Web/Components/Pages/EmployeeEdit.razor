@@ -1,9 +1,8 @@
-﻿@page "/employees/edit"
-@page "/employees/edit/{Id:int}"
+﻿@page "/employees/Edit"
+@page "/employees/Edit/{Id:int}"
+@using rp_giprocomex.Core.Models
 @inject rp_giprocomex.Services.EmployeeService EmployeeService
 @inject NavigationManager Nav
-@using rp_giprocomex.Core.Models
-@using Microsoft.AspNetCore.Components.Forms
 
 <h3>@(isNew ? "Nuevo empleado" : "Editar empleado")</h3>
 
@@ -45,26 +44,42 @@
 
         <div class="col-md-3 mb-2">
             <label>Fecha Ingreso</label>
-            <InputDate class="form-control" @bind-Value="employee.FechaIngreso" />
+            <!-- Usar TValue en vez de sintaxis genérica para evitar errores de parsing -->
+            <InputDate TValue="DateTime"
+                       class="form-control"
+                       @bind-Value="employee.FechaIngreso"
+                       @onchange="OnFechaIngresoChanged" />
         </div>
 
         <div class="col-md-3 mb-2">
             <label>Fecha Término</label>
-            <InputDate class="form-control" @bind-Value="employee.FechaTermino" />
+            <!-- DateTime? -> usar TValue="DateTime?" y @bind-Value -->
+            <InputDate TValue="DateTime ?"
+                       class="form-control"
+                       @bind-Value="employee.FechaTermino"
+                       Disabled="true" />
         </div>
 
         <div class="col-md-3 mb-2">
-            <label>Renovación</label>
-            <InputDate class="form-control" @bind-Value="employee.Renovacion" />
+            <label>Renovación (inicio)</label>
+            <InputDate TValue="DateTime ?"
+                       class="form-control"
+                       @bind-Value="employee.Renovacion"
+                       Disabled="true" />
         </div>
 
         <div class="col-md-3 mb-2">
             <label>Renovación - Término</label>
-            <InputDate class="form-control" @bind-Value="employee.RenovacionTermino" />
+            <InputDate TValue="DateTime ?"
+                       class="form-control"
+                       @bind-Value="employee.RenovacionTermino"
+                       Disabled="true" />
         </div>
 
         <div class="col-md-3 form-check mb-3">
-            <InputCheckbox class="form-check-input" @bind-Value="employee.Indeterminado" @onchange="OnIndeterminadoChanged" />
+            <InputCheckbox class="form-check-input"
+                           @bind-Value="employee.Indeterminado"
+                           @onchange="OnIndeterminadoChanged" />
             <label class="form-check-label">Indeterminado</label>
         </div>
     </div>
@@ -93,40 +108,46 @@
             }
             else
             {
-                // Id no existe: redirigir a lista
                 Nav.NavigateTo("/employees");
             }
         }
         else
         {
-            // Nuevo empleado: valores por defecto
             employee = new Employee
             {
                 FechaIngreso = DateTime.Today,
                 Indeterminado = false
             };
+
+            CalculateDatesClient();
         }
     }
 
-    private async Task SaveAsync()
+    private void CalculateDatesClient()
     {
-        // Limpia fechas si Indeterminado
         if (employee.Indeterminado)
         {
             employee.FechaTermino = null;
             employee.Renovacion = null;
             employee.RenovacionTermino = null;
+            return;
         }
 
-        if (isNew)
-            await EmployeeService.AddAsync(employee);
-        else
-            await EmployeeService.UpdateAsync(employee);
+        if (employee.FechaIngreso == default)
+            employee.FechaIngreso = DateTime.Today;
 
-        Nav.NavigateTo("/employees");
+        employee.FechaTermino = employee.FechaIngreso.AddDays(90);
+        employee.Renovacion = employee.FechaTermino;
+        employee.RenovacionTermino = employee.Renovacion?.AddDays(90);
     }
 
-    private void Cancel() => Nav.NavigateTo("/employees");
+    // onchange handler for InputDate: receives ChangeEventArgs
+    private void OnFechaIngresoChanged(ChangeEventArgs e)
+    {
+        // The bound value is already updated by @bind-Value, just recalc derived dates
+        CalculateDatesClient();
+        StateHasChanged();
+    }
 
     private void OnIndeterminadoChanged(ChangeEventArgs e)
     {
@@ -136,5 +157,21 @@
             employee.Renovacion = null;
             employee.RenovacionTermino = null;
         }
+        else
+        {
+            CalculateDatesClient();
+        }
     }
+
+    private async Task SaveAsync()
+    {
+        if (isNew)
+            await EmployeeService.AddAsync(employee);
+        else
+            await EmployeeService.UpdateAsync(employee);
+
+        Nav.NavigateTo("/employees");
+    }
+
+    private void Cancel() => Nav.NavigateTo("/employees");
 }

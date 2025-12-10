@@ -1,5 +1,4 @@
-﻿@namespace rp_giprocomex.Web.Layout
-@using rp_giprocomex.Web.Layout
+﻿@using rp_giprocomex.Web.Shared
 @inherits LayoutComponentBase
 
 <div class="layout-root @(sidebarCollapsed ? "sidebar-collapsed" : "")">
@@ -23,5 +22,9 @@
 
 @code {
     private bool sidebarCollapsed;
-    private void ToggleSidebar() => sidebarCollapsed = !sidebarCollapsed;
+
+    private void ToggleSidebar()
+    {
+        sidebarCollapsed = !sidebarCollapsed;
+    }
 }

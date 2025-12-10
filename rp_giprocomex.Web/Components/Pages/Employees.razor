@@ -1,69 +1,100 @@
 ﻿@page "/employees"
-@inject rp_giprocomex.Services.EmployeeService EmployeeService
 @using rp_giprocomex.Core.Models
+@inject rp_giprocomex.Services.EmployeeService EmployeeService
+@inject NavigationManager Nav
+@inject IJSRuntime JS
 
-<h3>Empleados</h3>
+<div class="employees-wrap">
+    <div class="employees-container">
+        <div class="employees-header">
+            <div class="header-left">
+                <h1 class="page-title">Empleados</h1>
+                <div class="page-sub">Listado de colaboradores y vencimientos contractuales</div>
+            </div>
 
-<div class="mb-3 row">
-    <div class="col-md-6">
-        <input @bind="search" class="form-control" placeholder="Buscar por nombre, puesto u oficina..." />
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-primary" @onclick="Load">Buscar</button>
-        <a class="btn btn-success ms-2" href="/employees/edit">Nuevo empleado</a>
+            <div class="actions">
+                <a class="btn small" href="/employees/edit">+ Nuevo empleado</a>
+                <button type="button" class="btn secondary small" @onclick="Load">Actualizar</button>
+            </div>
+        </div>
+
+        <div class="search-row">
+            <div class="search-box" role="search" aria-label="Buscar empleados">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#6c757d" viewBox="0 0 16 16">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242.656a5 5 0 1 1 0-10 5 5 0 0 1 0 10z" />
+                </svg>
+                <input placeholder="Buscar por nombre, puesto u oficina..." @bind="search" @bind:event="oninput" />
+                <div class="search-actions">
+                    <button class="btn small" @onclick="Load">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="employees-table" aria-describedby="employees-table">
+                    <thead>
+                        <tr>
+                            <th style="width:56px">#</th>
+                            <th>Puesto</th>
+                            <th>Oficina</th>
+                            <th>Empresa</th>
+                            <th>Registro</th>
+                            <th>Nombre</th>
+                            <th>Ingreso</th>
+                            <th>Antigüedad</th>
+                            <th>Fecha Término</th>
+                            <th>Renovación - Término</th>
+                            <th>Indeterminado</th>
+                            <th style="width:140px"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (employees == null)
+                        {
+                            <tr><td colspan="12">Cargando...</td></tr>
+                        }
+                        else if (employees.Count == 0)
+                        {
+                            <tr><td colspan="12">No hay empleados.</td></tr>
+                        }
+                        else
+                        {
+                            @foreach (var e in employees)
+                            {
+                                <tr>
+                                    <td>@e.Numero</td>
+                                    <td>@e.Puesto</td>
+                                    <td>@e.Oficina</td>
+                                    <td>@e.Empresa</td>
+                                    <td>@e.RegistroPatronal</td>
+                                    <td style="font-weight:600">@e.NombreCompleto</td>
+                                    <td>@(e.FechaIngreso.ToString("yyyy-MM-dd"))</td>
+                                    <td><span class="badge">@e.Aniversario</span></td>
+                                    <td>@(e.FechaTermino.HasValue? e.FechaTermino.Value.ToString("yyyy-MM-dd") : "-")</td>
+                                    <td>@(e.RenovacionTermino.HasValue? e.RenovacionTermino.Value.ToString("yyyy-MM-dd") : "-")</td>
+                                    <td>@(e.Indeterminado ? "Sí" : "No")</td>
+                                    <td>
+                                        <a class="action-link" href="@($"/employees/edit/{e.Id}")">Editar</a>
+                                        <span style="padding:0 8px;color:#bbb">|</span>
+                                        <button class="action-link" style="background:none;border:0;padding:0;cursor:pointer" @onclick="@(async () => await DeleteAsync(e.Id))">Borrar</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-footer">
+                <div>@(employees?.Count ?? 0) empleados</div>
+                <div class="table-controls">
+                    <!-- espacio para paginación futura -->
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-<table class="table table-sm table-striped">
-    <thead class="table-dark">
-        <tr>
-            <th>#</th>
-            <th>Puesto</th>
-            <th>Oficina</th>
-            <th>Empresa</th>
-            <th>Registro</th>
-            <th>Nombre</th>
-            <th>Ingreso</th>
-            <th>Fecha Término</th>
-            <th>Renovación - Inicio</th>
-            <th>Renovación - Término</th>
-            <th>Indeterminado</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (employees is null)
-        {
-            <tr><td colspan="12">Cargando...</td></tr>
-        }
-        else if (employees.Count == 0)
-        {
-            <tr><td colspan="12">No hay empleados.</td></tr>
-        }
-        else
-        {
-            @foreach (var e in employees)
-            {
-                <tr>
-                    <td>@e.Numero</td>
-                    <td>@e.Puesto</td>
-                    <td>@e.Oficina</td>
-                    <td>@e.Empresa</td>
-                    <td>@e.RegistroPatronal</td>
-                    <td>@e.NombreCompleto</td>
-                    <td>@(e.FechaIngreso.ToString("yyyy-MM-dd"))</td>
-                    <td>@(e.FechaTermino.HasValue? e.FechaTermino.Value.ToString("yyyy-MM-dd") : "")</td>
-                    <td>@(e.Renovacion.HasValue? e.Renovacion.Value.ToString("yyyy-MM-dd") : "")</td>
-                    <td>@(e.RenovacionTermino.HasValue? e.RenovacionTermino.Value.ToString("yyyy-MM-dd") : "")</td>
-                    <td>@(e.Indeterminado ? "Sí" : "No")</td>
-                    <td>
-                        <a class="btn btn-sm btn-secondary" href="@($"/employees/edit/{e.Id}")">Editar</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
 
 @code {
     private List<Employee> employees = new();
@@ -76,8 +107,46 @@
 
     private async Task Load()
     {
-        employees = string.IsNullOrWhiteSpace(search)
-            ? await EmployeeService.GetAllAsync()
-            : await EmployeeService.SearchAsync(search);
+        try
+        {
+            employees = string.IsNullOrWhiteSpace(search)
+                ? await EmployeeService.GetAllAsync()
+                : await EmployeeService.SearchAsync(search);
+        }
+        catch (Exception ex)
+        {
+            // opcional: loguear o mostrar error al usuario
+            Console.Error.WriteLine(ex);
+            employees = new List<Employee>();
+        }
+        StateHasChanged();
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        try
+        {
+            // Confirm using browser confirm dialog via JS interop
+            var confirmed = false;
+            try
+            {
+                confirmed = await JS.InvokeAsync<bool>("confirm", $"¿Eliminar empleado #{id}?");
+            }
+            catch
+            {
+                // si JS falla, asumir confirm true para no bloquear en entornos sin JS
+                confirmed = true;
+            }
+
+            if (!confirmed) return;
+
+            await EmployeeService.DeleteAsync(id);
+            await Load();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            // opcional: mostrar notificación de error
+        }
     }
 }

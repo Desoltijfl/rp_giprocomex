@@ -1,0 +1,21 @@
+﻿@namespace rp_giprocomex.Web.Layout
+@using Microsoft.AspNetCore.Components.Routing
+
+<nav class="app-sidebar" aria-label="Menú principal">
+    <div class="sidebar-brand">
+        <a href="/" class="brand-link">rp_giprocomex</a>
+    </div>
+
+    <ul class="sidebar-nav">
+        <li><NavLink class="nav-link" href="/" Match="NavLinkMatch.All">Inicio</NavLink></li>
+        <li><NavLink class="nav-link" href="/employees">Empleados</NavLink></li>
+        <li><NavLink class="nav-link" href="/employees/edit">Nuevo empleado</NavLink></li>
+    </ul>
+
+    <hr class="sidebar-sep" />
+
+    <ul class="sidebar-nav sidebar-bottom">
+        <li><NavLink class="nav-link" href="/Identity/Account/Manage">Mi cuenta</NavLink></li>
+        <li><NavLink class="nav-link" href="/Identity/Account/Logout">Salir</NavLink></li>
+    </ul>
+</nav>

@@ -1,0 +1,234 @@
+﻿:root {
+    --primary: #2C6EA4;
+    --primary-contrast: #ffffff;
+    --muted: #6c757d;
+    --bg: #f6f8fa;
+    --card: #ffffff;
+    --border: #e3e6ea;
+    --accent: #E6F0FB;
+    --success: #28a745;
+    --danger: #dc3545;
+    --max-width: 1200px;
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Page container */
+.employees-wrap {
+    background: var(--bg);
+    min-height: calc(100vh - 80px);
+    padding: 32px 16px;
+    display: flex;
+    justify-content: center;
+}
+
+.employees-container {
+    width: 100%;
+    max-width: var(--max-width);
+}
+
+/* Header card */
+.employees-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.page-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin: 0;
+}
+
+.page-sub {
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-top: 4px;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--primary-contrast);
+    background: var(--primary);
+    transition: all .15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+    .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(44,110,164,0.14);
+    }
+
+    .btn.secondary {
+        background: transparent;
+        color: var(--primary);
+        border-color: var(--border);
+    }
+
+    .btn.success {
+        background: var(--success);
+    }
+
+    .btn.small {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+/* Search area */
+.search-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+    .search-box input[type="text"] {
+        border: 0;
+        outline: none;
+        min-width: 260px;
+        padding: 6px 8px;
+        font-size: 0.95rem;
+        background: transparent;
+        color: #222;
+    }
+
+.search-actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Card wrapper for table */
+.table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+}
+
+/* Responsive table */
+.table-responsive {
+    width: 100%;
+    overflow: auto;
+}
+
+.employees-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 900px;
+    font-size: 0.95rem;
+}
+
+    .employees-table thead th {
+        text-align: left;
+        padding: 10px 12px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #222;
+        border-bottom: 2px solid var(--border);
+        background: linear-gradient(180deg, rgba(230,240,251,0.6), transparent);
+        position: sticky;
+        top: 0;
+    }
+
+    .employees-table tbody td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+        color: #333;
+    }
+
+    .employees-table tbody tr:nth-child(even) {
+        background: var(--accent);
+    }
+
+    .employees-table tbody tr:hover {
+        background: rgba(44,110,164,0.04);
+    }
+
+/* Tiny badges and actions */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--primary);
+    background: rgba(44,110,164,0.08);
+    border: 1px solid rgba(44,110,164,0.12);
+}
+
+.action-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+
+/* Small screens */
+@media (max-width:900px) {
+    .employees-table {
+        min-width: 700px;
+        font-size: 0.9rem;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width:640px) {
+    .employees-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .search-box input[type="text"] {
+        min-width: 180px;
+    }
+}
+
+/* Footer small text */
+.table-footer {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
